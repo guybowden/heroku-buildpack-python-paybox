@@ -146,11 +146,11 @@ mkdir -p .paybox
 cp -R $CACHE_DIR/swig .paybox
 
 echo "updating path..." | indent
-PATH=$PATH:.paybox/swig/bin/
+PATH=$PATH:$BUILD_DIR/.paybox/swig/bin/
 export PATH
 echo $PATH | indent
 echo "setting SWIG_LIB environment var"
-export SWIG_LIB=.paybox/swig/share/swig/2.0.5/
+export SWIG_LIB=$BUILD_DIR/.paybox/swig/share/swig/2.0.5/
 
 # ### Virtualenv Setup
 #
