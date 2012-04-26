@@ -149,6 +149,9 @@ echo "updating path..." | indent
 PATH=$PATH:/app/.paybox/swig/bin/
 export PATH
 echo $PATH | indent
+echo "setting SWIG_LIB environment var"
+export SWIG_LIB=/app/.paybox/swig/share/swig/2.0.5/
+
 # ### Virtualenv Setup
 #
 
@@ -188,6 +191,9 @@ if (grep -Fiq "hg+" requirements.txt) then
 fi
 
 # Install dependencies with Pip.
+echo "updating path again..." | indent
+PATH=$PATH:/app/.paybox/swig/bin/
+export PATH
 puts-step "Installing dependencies using Pip version $(pip --version | awk '{print $2}')"
 pip install --use-mirrors -r requirements.txt --src ./.heroku/src | indent
 

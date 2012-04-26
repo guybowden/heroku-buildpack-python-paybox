@@ -9,6 +9,7 @@ cat <<EOF
 ---
 config_vars:
   PATH: /app/.heroku/venv/bin:/bin:/usr/local/bin:/usr/bin:/app/.paybox/swig/bin/
+  SWIG_LIB: /app/.paybox/swig/share/swig/2.0.5/
   PYTHONUNBUFFERED: true
   LIBRARY_PATH: /app/.heroku/vendor/lib
   LD_LIBRARY_PATH: /app/.heroku/vendor/lib
