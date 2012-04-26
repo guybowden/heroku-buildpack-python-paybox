@@ -145,6 +145,10 @@ fi
 mkdir -p .paybox
 cp -R $CACHE_DIR/swig .paybox
 
+echo "updating path..." | indent
+PATH=$PATH:/app/.paybox/swig/bin/
+export PATH
+echo $PATH | indent
 # ### Virtualenv Setup
 #
 
