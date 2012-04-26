@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+# This script serves as the Django build step of the
+# [**Python Buildpack**](https://github.com/heroku/heroku-buildpack-python)
+# compiler.
+#
+# A [buildpack](http://devcenter.heroku.com/articles/buildpacks) is an
+# adapter between a Python application and Heroku's runtime.
+#
+# This script is invoked by [`bin/compile`](/).
+
+# ## Sanity Checks
+#
+
+# Reject a Django app that appears to be packaged incorrectly.
+if [ -f settings.py ]; then
+  echo " !     Django app must be in a package subdirectory"
+  exit 1
+fi
+
+echo "-----> Injecting Django settings..."
+
+
+SETTINGS_FILE=$(find . -maxdepth 3 -type f -name 'settings.py' | head -1)
+PROJECT=$(dirname $SETTINGS_FILE)
+
+echo "Injecting code into $SETTINGS_FILE to read from DATABASE_URL" | indent
+
+cat >>$SETTINGS_FILE <<EOF
+
+import os
+import sys
+import urlparse
+
+# Register database schemes in URLs.
+urlparse.uses_netloc.append('postgres')
+urlparse.uses_netloc.append('mysql')
+
+try:
+
+    # Check to make sure DATABASES is set in settings.py file.
+    # If not default to {}
+
+    if 'DATABASES' not in locals():
+        DATABASES = {}
+
+    if 'DATABASE_URL' in os.environ:
+        url = urlparse.urlparse(os.environ['DATABASE_URL'])
+
+        # Ensure default database exists.
+        DATABASES['default'] = DATABASES.get('default', {})
+
+        # Update with environment configuration.
+        DATABASES['default'].update({
+            'NAME': url.path[1:],
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port,
+        })
+        if url.scheme == 'postgres':
+            DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
+
+        if url.scheme == 'mysql':
+            DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
+except Exception:
+    print 'Unexpected error:', sys.exc_info()
+
+EOF
+
