@@ -142,6 +142,9 @@ if [ ! -d $CACHE_DIR/swig ]; then
   echo "SWIG installed" | indent
 fi
 
+mkdir -p .paybox
+cp -R $CACHE_DIR/swig .paybox
+
 # ### Virtualenv Setup
 #
 
